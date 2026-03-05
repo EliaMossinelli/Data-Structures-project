@@ -39,12 +39,6 @@ Compile with the same flags used by the grader:
 gcc -Wall -Werror -std=gnu11 -O2 -lm "Data Structures Project.c" -o "Data Structures Project"
 ```
 
-Add `-g3` for debug symbols (useful with GDB and Valgrind):
-
-```bash
-gcc -Wall -Werror -std=gnu11 -O2 -lm -g3 "Data Structures Project.c" -o "Data Structures Project"
-```
-
 Run with an input file:
 
 ```bash
