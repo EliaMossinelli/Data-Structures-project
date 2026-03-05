@@ -32,6 +32,7 @@ The program models a geographic surface as a rectangular grid of hexagonal tiles
 
 ## Build & Run
 > **Note:** the following instructions are for Linux/macOS (or Windows with WSL — see [how to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install)).
+
 Compile with the same flags used by the grader:
 
 ```bash
