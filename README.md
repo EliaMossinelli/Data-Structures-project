@@ -44,58 +44,14 @@ Add `-g3` for debug symbols (useful with GDB and Valgrind):
 gcc -Wall -Werror -std=gnu11 -O2 -lm -g3 "Data Structures Project.c" -o "Data Structures Project"
 ```
 
-Alternatively, use the provided `Makefile`:
-
-```bash
-make "Data Structures Project"
-```
-
 Run with an input file:
 
 ```bash
 ./"Data Structures Project" < input.txt
 ```
 
-Save output to a file and compare against expected results:
+Save output to a file:
 
 ```bash
 ./"Data Structures Project" < input.txt > my_output.txt
-diff my_output.txt expected_output.txt
-```
-
----
-
-## Debugging
-
-**ASAN** (Address SANitizer) — catches out-of-bounds accesses and use-after-free at byte precision:
-
-```bash
-gcc -Wall -Werror -std=gnu11 -O2 -lm -g3 -fsanitize=address "Data Structures Project.c" -o "Data Structures Project"
-./"Data Structures Project" < input.txt
-```
-
-**GDB** — inspect runtime state interactively:
-
-```bash
-gdb ./"Data Structures Project"
-```
-
-**Valgrind / Memcheck** — detect memory leaks, use-after-free, double-free, and reads from uninitialised memory (remove `-fsanitize=address` first):
-
-```bash
-valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./"Data Structures Project" < input.txt
-```
-
-**Callgrind** — CPU profiling:
-
-```bash
-valgrind --tool=callgrind ./"Data Structures Project" < input.txt
-kcachegrind callgrind.out.<PID>
-```
-
-**Massif** — heap memory profiling over time:
-
-```bash
-valgrind --tool=massif ./"Data Structures Project" < input.txt
-massif-visualizer massif.out.<PID>
 ```
