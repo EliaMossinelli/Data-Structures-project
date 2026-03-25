@@ -58,12 +58,22 @@ Save output to a file:
 
 Tools used during development on Linux.
 
-### GDB — Debugger
+> **Note:** Valgrind and ASAN are **incompatible** — they partially overlap in functionality. Remove `-fsanitize=address` before running any Valgrind tool.
 
-Compile with debug symbols (no `-O2`):
+Install all tools on Debian/Ubuntu:
 
 ```bash
-gcc -Wall -Werror -std=gnu11 -g -lm "Data Structures Project.c" -o "Data Structures Project"
+sudo apt install gdb valgrind kcachegrind massif-visualizer build-essential
+```
+
+---
+
+### GDB — Debugger
+
+Compile with debug symbols (replace `-O2` with `-g3`):
+
+```bash
+gcc -Wall -Werror -std=gnu11 -g3 -lm "Data Structures Project.c" -o "Data Structures Project"
 ```
 
 Launch the debugger:
@@ -76,52 +86,77 @@ Useful GDB commands:
 
 | Command | Description |
 |---|---|
-| `break main` | Set a breakpoint at `main` |
 | `run < input.txt` | Run the program with input |
+| `break main` | Set a breakpoint at `main` |
 | `next` | Execute next line |
 | `step` | Step into a function |
 | `print var` | Print the value of a variable |
 | `backtrace` | Show the call stack |
 | `quit` | Exit GDB |
 
+Full reference: http://users.ece.utexas.edu/~adnan/gdb-refcard.pdf
+
 ---
 
-### Valgrind — Memory Leak Detection
+### ASAN — Address SANitizer
+
+Detects out-of-bounds memory accesses with byte-level precision. Use this **before** Valgrind for a faster feedback loop.
+
+Compile with:
 
 ```bash
-valgrind --leak-check=full --show-leak-kinds=all ./"Data Structures Project" < input.txt
+gcc -Wall -Werror -std=gnu11 -g3 -fsanitize=address -lm "Data Structures Project.c" -o "Data Structures Project"
 ```
 
-Useful flags:
+Run normally — the program will abort and print a detailed report if a memory error is detected:
+
+```bash
+./"Data Structures Project" < input.txt
+```
+
+---
+
+### Valgrind — Memcheck
+
+Detects memory leaks, use-after-free, double-free, and reads from uninitialized variables.
+
+> Remove `-fsanitize=address` from compilation flags before using Valgrind.
+
+```bash
+gcc -Wall -Werror -std=gnu11 -g3 -lm "Data Structures Project.c" -o "Data Structures Project"
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./"Data Structures Project" < input.txt
+```
 
 | Flag | Description |
 |---|---|
 | `--leak-check=full` | Detailed report of all leaks |
 | `--show-leak-kinds=all` | Show direct, indirect, and possible leaks |
 | `--track-origins=yes` | Track origin of uninitialized values |
-| `--error-exitcode=1` | Return non-zero exit code on errors |
+
+Reference: https://valgrind.org
 
 ---
 
-### gprof — Performance Profiling
+### Callgrind — CPU Profiling
 
-Compile with profiling enabled:
-
-```bash
-gcc -Wall -Werror -std=gnu11 -pg -lm "Data Structures Project.c" -o "Data Structures Project"
-```
-
-Run the program to generate profiling data:
+Instruments the program to measure time spent in each function. Useful for identifying bottlenecks in Dijkstra or the hash table.
 
 ```bash
-./"Data Structures Project" < input.txt
+valgrind --tool=callgrind ./"Data Structures Project" < input.txt
+kcachegrind callgrind.out.<PID>
 ```
 
-Analyze the results:
+Replace `<PID>` with the process ID printed by Valgrind at the end of the run.
+
+---
+
+### Massif — Heap Memory Profiling
+
+Tracks heap memory usage over time, showing which allocations consume the most memory.
 
 ```bash
-gprof ./"Data Structures Project" gmon.out > analysis.txt
-cat analysis.txt
+valgrind --tool=massif ./"Data Structures Project" < input.txt
+massif-visualizer massif.out.<PID>
 ```
 
-This shows how much time is spent in each function — useful for identifying bottlenecks in Dijkstra or the hash table.
+Replace `<PID>` with the process ID printed by Valgrind at the end of the run.
